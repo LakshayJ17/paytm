@@ -82,14 +82,14 @@ router.post("/signin", async (req, res) => {
         const token = jwt.sign({
             userId: user._id
         }, JWT_SECRET);
-        
+
         // Send the token back to the client in the response
         res.json({
             token: token
         })
         return;
     }
-
+    
     res.status(411).json({
         message: "Error while logging in"
     })
