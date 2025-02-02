@@ -52,4 +52,47 @@ router.post("/signup", async (req, res) => {
     const userId = user._id
 })
 
+// SIGNIN SCHEMA & LOGIC
+// -----------------------------------------------
+// Check if the given inputs satisfy the schema
+// if not, return an error message
+// If yes, check whether user exists in db
+// If yes, return a token using jwt.sign
+// If no, return an error message
+
+const signinBody = zod.object({
+    username: zod.string().email(),
+    password: zod.string()
+})
+
+router.post("/signin", async (req, res) => {
+    const { success } = signinBody.safeParse(req.body);
+
+    if (!success) {
+        return res.status(411).json(({ message: "Email already taken / Incorrect inputs" }))
+    }
+
+    const user = await User.findOne({
+        username: req.body.username,
+        password: req.body.password
+    })
+
+    if (user) {
+        // Generate a JWT with the user's ID as the payload
+        const token = jwt.sign({
+            userId: user._id
+        }, JWT_SECRET);
+        
+        // Send the token back to the client in the response
+        res.json({
+            token: token
+        })
+        return;
+    }
+
+    res.status(411).json({
+        message: "Error while logging in"
+    })
+})
+
 module.exports = router
