@@ -89,9 +89,69 @@ router.post("/signin", async (req, res) => {
         })
         return;
     }
-    
+
     res.status(411).json({
         message: "Error while logging in"
+    })
+})
+
+//  UPDATE SCHEMA & LOGIC
+// -----------------------------------------------
+// Check if the given inputs satisfy the schema
+// If not, return an error message
+// If yes, update the user information in the db
+
+const updateBody = zod.object({
+    password: zod.string().optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+})
+
+router.put("/", authMiddleware, async (req, res) => {
+    const { success } = updateBody.safeParse(req.body)
+    if (!success) {
+        res.status(411).json({
+            message: "Error while updating information"
+        })
+    }
+
+    await User.updateOne(req.body, {
+        id: req.userId
+    })
+
+    res.json({
+        message: "Updated successfully"
+    })
+})
+
+// GET INFO OF ALL USERS ( LIKE ACCESSING PEOPLE THROUGH THEIR NAME IN PAYTM TO SEND MONEY)
+// -----------------------------------------------
+// Check if the given inputs satisfy the schema
+// If not, return an error message
+// If yes, find the users with the given filter
+
+router.get("/bulk", async (req, res) => {
+    const filter = req.query.filter || "";
+
+    const users = await User.find({
+        $or: [{
+            firstName: {
+                "$regex": filter
+            }
+        }, {
+            lastName: {
+                "$regex": filter
+            }
+        }]
+    })
+
+    res.json({
+        user: users.map(user => ({
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            _id: user._id
+        }))
     })
 })
 
