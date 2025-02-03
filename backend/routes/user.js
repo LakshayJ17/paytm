@@ -51,6 +51,7 @@ router.post("/signup", async (req, res) => {
     })
     const userId = user._id
 
+    // Assigning some random balance to the user at signup - bcz no banking api used in project
     await Account.create({
         userId,
         balance: 1 + Math.random() * 10000
