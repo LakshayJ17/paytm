@@ -30,8 +30,24 @@ const userSchema = mongoose.Schema({
         maxLength: 50
     }
 })
+
+const accountSchema = mongoose.Schema({
+    // only exisiting user id can add balance
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    balance: {
+        type: Number,
+        required: true
+    }
+})
+
 const User = mongoose.model("User", userSchema);
+const Account = mongoose.model("Account", accountSchema);
 
 module.exports = {
-    User
+    User,
+    Account
 }
