@@ -2,10 +2,13 @@
 // Routes all requests with /user to the userRouter
 // For example, /api/v1/user/... will be handled by the userRouter
 
-const express = require("express")
-const userRouter = require("./user")
-const router = express.Router()
+const express = require('express');
+const userRouter = require("./user");
+const accountRouter = require("./account");
 
-router.use("/user", userRouter)
+const router = express.Router();
 
-module.exports = router
+router.use("/user", userRouter);
+router.use("/account", accountRouter);
+
+module.exports = router;

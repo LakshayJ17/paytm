@@ -7,7 +7,7 @@ const router = express.Router();
 const zod = require("zod");
 const { User, Account } = require("../db");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../config");
+const {JWT_SECRET} = require("../config");
 const { authMiddleware } = require("../middleware");
 
 
@@ -21,21 +21,22 @@ const { authMiddleware } = require("../middleware");
 
 const signupBody = zod.object({
     username: zod.string().email(),
-    firstName: zod.string(),
-    lastName: zod.string(),
-    password: zod.string()
+	firstName: zod.string(),
+	lastName: zod.string(),
+	password: zod.string()
 })
 
 router.post("/signup", async (req, res) => {
-    const { success } = signupBody.safeParse(req.body);
-
+    const { success } = signupBody.safeParse(req.body)
     if (!success) {
-        return res.status(411).json({ message: "Email already taken / Incorrect inputs" })
+        return res.status(411).json({
+            message: "Email already taken / Incorrect inputs"
+        })
     }
 
     const existingUser = await User.findOne({
         username: req.body.username
-    });
+    })
 
     if (existingUser) {
         return res.status(411).json({
@@ -43,15 +44,14 @@ router.post("/signup", async (req, res) => {
         })
     }
 
-    const user = User.create({
+    const user = await User.create({
         username: req.body.username,
+        password: req.body.password,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        password: req.body.password
     })
-    const userId = user._id
+    const userId = user._id;
 
-    // Assigning some random balance to the user at signup - bcz no banking api used in project
     await Account.create({
         userId,
         balance: 1 + Math.random() * 10000
