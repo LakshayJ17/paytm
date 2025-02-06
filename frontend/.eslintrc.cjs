@@ -16,5 +16,7 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    'react/prop-types': 'off', // Disable prop-types validation
+    'react/react-in-jsx-scope': 'off', // Disable React in scope validation for JSX
   },
 }
